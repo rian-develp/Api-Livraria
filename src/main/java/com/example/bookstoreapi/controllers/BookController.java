@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -20,8 +21,8 @@ public class BookController {
     }
 
     @GetMapping("/book/{code}")
-    public BookEntity getBookById(@PathVariable("code") Long code){
-        return repository.getReferenceById(code);
+    public Optional<BookEntity> getBookById(@PathVariable("code") Long code){
+        return repository.findById(code);
     }
 
     @PutMapping("/book/{code}/price")
