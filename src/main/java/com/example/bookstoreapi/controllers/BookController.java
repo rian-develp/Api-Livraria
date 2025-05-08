@@ -25,12 +25,12 @@ public class BookController {
         return repository.findById(code);
     }
 
-    @PutMapping("/book/{code}/price")
+    @PatchMapping("/book/{code}/price")
     public void updateBookPrice(@PathVariable("price") Double price, @PathVariable("code") Long code){
         repository.updateBookPrice(price, code);
     }
 
-    @PutMapping("/book/{code}/quantity")
+    @PatchMapping("/book/{code}/quantity")
     public void updateBookQuantity(@PathVariable("quantity") Integer quantity, @PathVariable("code") Long code){
         repository.updateBookQuantity(quantity, code);
     }
