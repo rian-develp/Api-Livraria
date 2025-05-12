@@ -15,28 +15,28 @@ public class BookController {
     @Autowired
     private BookRepository repository;
 
-    @GetMapping("/book")
+    @GetMapping("/books")
     public List<BookEntity> getAllBooks(){
         return repository.findAll();
     }
 
-    @GetMapping("/book/{code}")
+    @GetMapping("/books/{code}")
     public Optional<BookEntity> getBookById(@PathVariable("code") Long code){
         return repository.findById(code);
     }
 
-    @PatchMapping("/book/{code}/price")
+    @PatchMapping("/books/{code}/price")
     public void updateBookPrice(@PathVariable("price") Double price, @PathVariable("code") Long code){
         repository.updateBookPrice(price, code);
     }
 
-    @PatchMapping("/book/{code}/quantity")
+    @PatchMapping("/books/{code}/quantity")
     public void updateBookQuantity(@PathVariable("quantity") Integer quantity, @PathVariable("code") Long code){
         repository.updateBookQuantity(quantity, code);
     }
 
     @PostMapping
-    public void createBook(@RequestParam BookEntity bookEntity){
+    public void insertBook(@RequestBody BookEntity bookEntity){
         repository.save(bookEntity);
     }
 }

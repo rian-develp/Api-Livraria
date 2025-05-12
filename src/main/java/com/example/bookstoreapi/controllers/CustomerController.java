@@ -19,19 +19,19 @@ public class CustomerController {
     @Autowired
     private CustomerRepository repository;
 
-    @GetMapping("/customer")
+    @GetMapping("/customers")
     public List<CustomerEntity> getAllCustomers(){
         return repository.findAll();
     }
 
-    @GetMapping("/customer/{id}")
+    @GetMapping("/customers/{id}")
     public ResponseEntity<?> getCustomerById(@PathVariable("id") Long id){
         return repository.findById(id)
                 .map(customer -> ResponseEntity.ok().body((Object) customer))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("O cliente não existe"));
     }
 
-    @GetMapping("/customer/{email}")
+    @GetMapping("/customers/{email}")
     public ResponseEntity<?> getCustomerByEmail(@PathVariable("email") String email){
         try {
             return ResponseEntity.ok(repository.getCustomerByEmail(email));
@@ -41,7 +41,7 @@ public class CustomerController {
         }
     }
 
-    @PostMapping("/customer")
+    @PostMapping("/customers")
     public ResponseEntity<?> insertCustomer(@RequestBody CustomerEntity entity){
         repository.save(entity);
         return ResponseEntity.ok("Sucesso ao inserir cliente no banco de dados");
