@@ -3,11 +3,8 @@ package com.example.bookstoreapi.controllers;
 import com.example.bookstoreapi.entites.CustomerEntity;
 import com.example.bookstoreapi.repositories.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,7 +33,7 @@ public class CustomerController {
         try {
             return ResponseEntity.ok(repository.getCustomerByEmail(email));
         } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Não existe cliente com esse email");
         }
     }

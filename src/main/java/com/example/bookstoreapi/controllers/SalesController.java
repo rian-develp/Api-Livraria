@@ -16,11 +16,12 @@ public class SalesController {
 
     @GetMapping("/sales")
     public ResponseEntity<?> getAllSales(){
-        return repository.findAll()
-                .stream()
-                .map(sales -> ResponseEntity.status(HttpStatus.OK).body((Object) sales))
-                .findFirst()
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Não foi possível encontrar"));
+        try {
+            return ResponseEntity.ok(repository.findAll());
+        } catch (Exception e) {
+            System.out.println("Erro Localizado no SalesController --> " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Houve um erro");
+        }
     }
 
     @GetMapping("/sales/{id}")
