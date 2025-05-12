@@ -17,17 +17,17 @@ public class AuthorController {
     @Autowired
     private AuthorRepository repository;
 
-    @GetMapping("/author")
+    @GetMapping("/authors")
     public List<AuthorEntity> getAllAuthors(){
         return repository.findAll();
     }
 
-    @GetMapping("/author/{id}")
-    public Optional<AuthorEntity> getAuthorById(@Param("id") Long id){
+    @GetMapping("/authors/{id}")
+    public Optional<AuthorEntity> getAuthorById(@PathVariable("id") Long id){
         return repository.findById(id);
     }
 
-    @PostMapping("/author")
+    @PostMapping("/authors")
     public ResponseEntity<String> insertAuthor(@RequestBody AuthorEntity entity){
         repository.save(entity);
         return ResponseEntity.ok("Autor inserido com sucesso");
