@@ -1,6 +1,7 @@
 package com.example.bookstoreapi.controllers;
 
 import com.example.bookstoreapi.entites.CustomerEntity;
+import com.example.bookstoreapi.entites.dtos.customerdtos.InsertCustomerDTO;
 import com.example.bookstoreapi.repositories.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,8 +40,24 @@ public class CustomerController {
     }
 
     @PostMapping("/customers")
-    public ResponseEntity<?> insertCustomer(@RequestBody CustomerEntity entity){
-        repository.save(entity);
-        return ResponseEntity.ok("Sucesso ao inserir cliente no banco de dados");
+    public ResponseEntity<?> insertCustomer(@RequestBody InsertCustomerDTO dto){
+        try{
+            if (dto.cpf().isEmpty() || dto.cpf().isBlank() ||
+                    dto.email().isEmpty() || dto.email().isBlank() ||
+                    dto.name().isEmpty() || dto.name().isBlank()
+            ) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Campos estão incorretos");
+            }
+
+            CustomerEntity entity = new CustomerEntity();
+            entity.setCpf(dto.cpf());
+            entity.setEmail(dto.email());
+            entity.setName(dto.name());
+            repository.save(entity);
+            return ResponseEntity.ok("Sucesso ao inserir cliente no banco de dados");
+        } catch (Exception e) {
+            System.out.println("Erro localizado no CustomerController --> " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Houve um erro");
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.bookstoreapi.controllers;
 
 import com.example.bookstoreapi.entites.SalesEntity;
+import com.example.bookstoreapi.entites.dtos.salesdtos.InsertSaleDTO;
 import com.example.bookstoreapi.repositories.SalesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,16 +28,32 @@ public class SalesController {
     @GetMapping("/sales/{id}")
     public ResponseEntity<?> getSaleById(@PathVariable("id") Long id){
         try {
-            return ResponseEntity.ok(repository.findById(id));
+            var sale = repository.findById(id);
+            if (sale.isEmpty())
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Venda não encontrada");
+            return ResponseEntity.ok(sale);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Venda não encontrada");
+            System.out.println("Erro localizado no SalesController --> " +e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Houve um Erro");
         }
     }
 
     @PostMapping("/sales")
-    public ResponseEntity<String> insertSale(@RequestBody SalesEntity entity){
-        repository.save(entity);
-        return ResponseEntity.ok("Venda inserida com sucesso");
+    public ResponseEntity<String> insertSale(@RequestBody InsertSaleDTO dto){
+        try{
+            if (dto.bookCode() == null || dto.customerId() == null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Campos estão incorretos");
+            }
+
+            SalesEntity entity = new SalesEntity();
+            entity.setBookCode(dto.bookCode());
+            entity.setCustomerId(dto.customerId());
+            repository.save(entity);
+            return ResponseEntity.ok("Venda inserida com sucesso");
+        } catch (Exception e){
+            System.out.println("Erro localizado no SalesController --> " +e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Houve um Erro");
+        }
     }
 
     @DeleteMapping("/sales/{id}/delete")

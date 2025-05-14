@@ -1,6 +1,7 @@
 package com.example.bookstoreapi.controllers;
 
 import com.example.bookstoreapi.entites.AuthorEntity;
+import com.example.bookstoreapi.entites.dtos.authordtos.InsertAuthorDTO;
 import com.example.bookstoreapi.repositories.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,23 +25,43 @@ public class AuthorController {
         }
     }
 
-    @GetMapping("/authors/{id}")
-    public ResponseEntity<?> getAuthorById(@PathVariable("id") Long id){
+    @GetMapping("/authors/{code}")
+    public ResponseEntity<?> getAuthorById(@PathVariable("code") Long code){
         try{
-            return ResponseEntity.ok(repository.findById(id));
+
+            var entity = repository.findById(code);
+            if (entity.isEmpty())
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Autor não encontrado");
+
+            return ResponseEntity.ok(entity);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não existe");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Houve um erro");
         }
     }
 
     @PostMapping("/authors")
-    public ResponseEntity<String> insertAuthor(@RequestBody AuthorEntity entity){
-        try{
-            repository.save(entity);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Autor inserido com sucesso");
-        } catch (Exception e) {
-            System.out.println("Erro localizado no AuthorController --> " + e.getMessage());
-            return ResponseEntity.ok("Erro ao inserir usuário no banco de dados");
+    public ResponseEntity<String> insertAuthor(@RequestBody InsertAuthorDTO dto){
+
+        if (!dto.citizen().isEmpty() && !dto.citizen().isBlank()
+                && !dto.name().isEmpty() && !dto.name().isBlank()
+        ){
+
+            try{
+
+                AuthorEntity entity = new AuthorEntity();
+                entity.setCitizen(dto.citizen());
+                entity.setName(dto.name());
+
+                repository.save(entity);
+                return ResponseEntity.status(HttpStatus.CREATED).body("Autor inserido com sucesso");
+            } catch (Exception e) {
+                System.out.println("Erro localizado no AuthorController --> " + e.getMessage());
+                return ResponseEntity.ok("Erro ao inserir usuário no banco de dados");
+            }
+
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro nos campos");
         }
     }
 }
