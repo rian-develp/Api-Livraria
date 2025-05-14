@@ -1,6 +1,9 @@
 package com.example.bookstoreapi.controllers;
 
 import com.example.bookstoreapi.entites.BookEntity;
+import com.example.bookstoreapi.entites.dtos.bookdtos.InsertBookDTO;
+import com.example.bookstoreapi.entites.dtos.bookdtos.UpdateBookPriceDTO;
+import com.example.bookstoreapi.entites.dtos.bookdtos.UpdateBookQuantity;
 import com.example.bookstoreapi.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -28,18 +31,26 @@ public class BookController {
     @GetMapping("/books/{code}")
     public ResponseEntity<?> getBookById(@PathVariable("code") Long code){
         try {
-            return ResponseEntity.ok(repository.findById(code));
+            var bookEntity = repository.findById(code);
+            if (bookEntity.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro não encontrado");
+            }
+            return ResponseEntity.ok(bookEntity);
         } catch (Exception e) {
             System.out.println("Erro Localizado no BookController --> " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Houve um erro");
         }
     }
 
-    @PatchMapping("/books/{code}/{price}")
-    public ResponseEntity<?> updateBookPrice(@PathVariable("price") Double price, @PathVariable("code") Long code){
+    @PatchMapping("/books")
+    public ResponseEntity<?> updateBookPrice(@RequestBody UpdateBookPriceDTO dto){
         try{
-            repository.updateBookPrice(price, code);
-            return ResponseEntity.ok("Preço do livro atualizado com sucesso");
+            if (dto.id() != null && dto.price() != null){
+                repository.updateBookPrice(dto.price(), dto.id());
+                return ResponseEntity.ok("Preço do livro atualizado com sucesso");
+            }
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao atualizar preço do livro");
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro não encontrado");
         } catch (Exception e) {
@@ -49,10 +60,13 @@ public class BookController {
     }
 
     @PatchMapping("/books/{code}/{quantity}")
-    public ResponseEntity<?> updateBookQuantity(@PathVariable("quantity") Integer quantity, @PathVariable("code") Long code){
+    public ResponseEntity<?> updateBookQuantity(@RequestBody UpdateBookQuantity dto){
         try{
-            repository.updateBookQuantity(quantity, code);
-            return ResponseEntity.ok("Quantidade do livro atualizado com sucesso");
+            if (dto.id() != null && dto.quantity() != null){
+                repository.updateBookQuantity(dto.quantity(), dto.id());
+                return ResponseEntity.ok("Quantidade do livro atualizado com sucesso");
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao atualizar livro");
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro não encontrado");
         } catch (Exception e) {
@@ -62,10 +76,24 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<?> insertBook(@RequestBody BookEntity entity){
+    public ResponseEntity<?> insertBook(@RequestBody InsertBookDTO dto){
         try{
-            repository.save(entity);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Autor inserido com sucesso");
+            if (dto.authorName() == null || dto.authorName().isBlank() ||
+                    dto.title() == null || dto.title().isBlank() ||
+                    dto.price() == null || dto.publishDate() == null ||
+                    dto.quantity() == null
+            ) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Campos estão incorretos");
+            }
+
+            BookEntity entity = new BookEntity();
+            entity.setAuthorName(dto.authorName());
+            entity.setPrice(dto.price());
+            entity.setPublishDate(dto.publishDate());
+            entity.setQuantity(dto.quantity());
+            entity.setTitle(dto.title());
+
+            return ResponseEntity.status(HttpStatus.CREATED).body("Livro criado com sucesso");
         } catch (DataIntegrityViolationException e) {
             System.out.println("Erro localizado no BookController --> " + e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Livro já existe no banco de dados");
