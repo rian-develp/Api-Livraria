@@ -17,12 +17,23 @@ public class SalesEntity {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Long getBookCode() {
         return bookCode;
+    }
+
+    public void setBookCode(Long bookCode) {
+        this.bookCode = bookCode;
     }
 
     public Long getCustomerId() {
         return customerId;
     }
 
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
 }
