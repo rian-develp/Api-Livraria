@@ -1,7 +1,14 @@
 package com.example.bookstoreapi.entites;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
+@RequiredArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "customers")
 public class CustomerEntity {
@@ -9,41 +16,12 @@ public class CustomerEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(length = 14, nullable = false, unique = true)
+    @NonNull
     private String cpf;
     @Column(length = 28, nullable = false, unique = true)
+    @NonNull
     private String email;
     @Column(length = 26, nullable = false)
+    @NonNull
     private String name;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }
