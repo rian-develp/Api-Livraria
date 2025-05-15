@@ -1,8 +1,16 @@
 package com.example.bookstoreapi.entites;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.sql.Date;
+
+@RequiredArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "books")
 public class BookEntity {
@@ -10,61 +18,18 @@ public class BookEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long code;
     @Column(name = "author_name", nullable = false, length = 24)
+    @NonNull
     private String authorName;
     @Column(nullable = false)
+    @NonNull
     private Double price;
     @Column(name = "publish_date", nullable = false)
+    @NonNull
     private Date publishDate;
     @Column(nullable = false)
+    @NonNull
     private Integer quantity;
     @Column(length = 42, nullable = false)
+    @NonNull
     private String title;
-
-    public Long getCode() {
-        return code;
-    }
-
-    public void setCode(Long code) {
-        this.code = code;
-    }
-
-    public String getAuthorName() {
-        return authorName;
-    }
-
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public Date getPublishDate() {
-        return publishDate;
-    }
-
-    public void setPublishDate(Date publishDate) {
-        this.publishDate = publishDate;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 }
