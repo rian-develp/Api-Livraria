@@ -42,7 +42,7 @@ public class BookController {
         }
     }
 
-    @PatchMapping("/books")
+    @PatchMapping("/books/price")
     public ResponseEntity<?> updateBookPrice(@RequestBody UpdateBookPriceDTO dto){
         try{
             if (dto.id() != null && dto.price() != null){
@@ -59,7 +59,7 @@ public class BookController {
         }
     }
 
-    @PatchMapping("/books/{code}/{quantity}")
+    @PatchMapping("/books/quantity")
     public ResponseEntity<?> updateBookQuantity(@RequestBody UpdateBookQuantity dto){
         try{
             if (dto.id() != null && dto.quantity() != null){
@@ -75,7 +75,7 @@ public class BookController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/books")
     public ResponseEntity<?> insertBook(@RequestBody InsertBookDTO dto){
         try{
             if (dto.authorName() == null || dto.authorName().isBlank() ||
