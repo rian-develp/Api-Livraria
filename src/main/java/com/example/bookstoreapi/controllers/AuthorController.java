@@ -3,6 +3,7 @@ package com.example.bookstoreapi.controllers;
 import com.example.bookstoreapi.entites.AuthorEntity;
 import com.example.bookstoreapi.entites.dtos.authordtos.InsertAuthorDTO;
 import com.example.bookstoreapi.repositories.AuthorRepository;
+import com.example.bookstoreapi.services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +14,13 @@ import org.springframework.web.bind.annotation.*;
 public class AuthorController {
 
     @Autowired
-    private AuthorRepository repository;
+    private AuthorService service;
 
     @GetMapping("/authors")
-    public ResponseEntity<?> getAllAuthors(){
-        try{
-            return ResponseEntity.ok(repository.findAll());
+    public ResponseEntity<?> getAllAuthors() {
+
+        try {
+            return ResponseEntity.ok(service.getAllAuthors());
         } catch (Exception e) {
             System.out.println("O erro no AuthorController --> " + e.getMessage());
             return ResponseEntity.ok("Houve um erro: ");
@@ -26,10 +28,10 @@ public class AuthorController {
     }
 
     @GetMapping("/authors/{code}")
-    public ResponseEntity<?> getAuthorById(@PathVariable("code") Long code){
-        try{
+    public ResponseEntity<?> getAuthorById(@PathVariable("code") Long code) {
 
-            var entity = repository.findById(code);
+        try {
+            var entity = service.getAuthorByCode(code);
             if (entity.isEmpty())
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body("Autor não encontrado");
@@ -41,25 +43,19 @@ public class AuthorController {
     }
 
     @PostMapping("/authors")
-    public ResponseEntity<String> insertAuthor(@RequestBody InsertAuthorDTO dto){
+    public ResponseEntity<String> insertAuthor(@RequestBody InsertAuthorDTO dto) {
 
         if (!dto.citizen().isEmpty() && !dto.citizen().isBlank()
                 && !dto.name().isEmpty() && !dto.name().isBlank()
-        ){
+        ) {
 
-            try{
-
-                AuthorEntity entity = new AuthorEntity();
-                entity.setCitizen(dto.citizen());
-                entity.setName(dto.name());
-
-                repository.save(entity);
+            try {
+                service.insertAuthor(dto.citizen(), dto.name());
                 return ResponseEntity.status(HttpStatus.CREATED).body("Autor inserido com sucesso");
             } catch (Exception e) {
                 System.out.println("Erro localizado no AuthorController --> " + e.getMessage());
                 return ResponseEntity.ok("Erro ao inserir usuário no banco de dados");
             }
-
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro nos campos");
         }
