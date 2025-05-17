@@ -2,7 +2,7 @@ package com.example.bookstoreapi.controllers;
 
 import com.example.bookstoreapi.entites.SalesEntity;
 import com.example.bookstoreapi.entites.dtos.salesdtos.InsertSaleDTO;
-import com.example.bookstoreapi.repositories.SalesRepository;
+import com.example.bookstoreapi.services.SalesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 public class SalesController {
 
     @Autowired
-    private SalesRepository repository;
+    private SalesService service;
 
     @GetMapping("/sales")
     public ResponseEntity<?> getAllSales(){
         try {
-            return ResponseEntity.ok(repository.findAll());
+            return ResponseEntity.ok(service.getAllSales());
         } catch (Exception e) {
             System.out.println("Erro Localizado no SalesController --> " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Houve um erro");
@@ -28,10 +28,10 @@ public class SalesController {
     @GetMapping("/sales/{id}")
     public ResponseEntity<?> getSaleById(@PathVariable("id") Long id){
         try {
-            var sale = repository.findById(id);
-            if (sale.isEmpty())
+            var optional = service.getSaleById(id);
+            if (optional.isEmpty())
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Venda não encontrada");
-            return ResponseEntity.ok(sale);
+            return ResponseEntity.ok(optional);
         } catch (Exception e) {
             System.out.println("Erro localizado no SalesController --> " +e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Houve um Erro");
@@ -41,28 +41,12 @@ public class SalesController {
     @PostMapping("/sales")
     public ResponseEntity<String> insertSale(@RequestBody InsertSaleDTO dto){
         try{
-            if (dto.bookCode() == null || dto.customerId() == null){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Campos estão incorretos");
-            }
-
-            SalesEntity entity = new SalesEntity();
-            entity.setBookCode(dto.bookCode());
-            entity.setCustomerId(dto.customerId());
-            repository.save(entity);
-            return ResponseEntity.ok("Venda inserida com sucesso");
+            var result = service.insertSale(dto.bookCode(), dto.customerId());
+            return result ? ResponseEntity.ok("Venda inserida com sucesso")
+                    : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Os campos estão incorretos");
         } catch (Exception e){
             System.out.println("Erro localizado no SalesController --> " +e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Houve um Erro");
-        }
-    }
-
-    @DeleteMapping("/sales/{id}/delete")
-    public ResponseEntity<String> deleteSaleById(Long id){
-        try {
-            repository.deleteById(id);
-            return ResponseEntity.ok("Venda deletada com sucesso");
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao excluir venda");
         }
     }
 }
