@@ -44,13 +44,9 @@ public class BookController {
     @PatchMapping("/books/price")
     public ResponseEntity<?> updateBookPrice(@RequestBody UpdateBookPriceDTO dto){
         try{
-            if (dto.id() != null && dto.price() != null){
-                var result = service.updateBookPrice(dto.price(), dto.id());
-                return result ? ResponseEntity.ok("Preço do livro atualizado com sucesso")
-                        : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro não encontrado");
-            }
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao atualizar preço do livro");
+            var result = service.updateBookPrice(dto.price(), dto.id());
+            return result ? ResponseEntity.ok("Preço do livro atualizado com sucesso")
+                    : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro não encontrado");
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro não encontrado");
         } catch (Exception e) {
@@ -62,12 +58,9 @@ public class BookController {
     @PatchMapping("/books/quantity")
     public ResponseEntity<?> updateBookQuantity(@RequestBody UpdateBookQuantity dto){
         try{
-            if (dto.id() != null && dto.quantity() != null){
-                var result = service.updateBookQuantity(dto.quantity(), dto.id());
-                return result ? ResponseEntity.ok("Preço do livro atualizado com sucesso")
-                        : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro não encontrado");
-            }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao atualizar livro");
+            var result = service.updateBookQuantity(dto.quantity(), dto.id());
+            return result ? ResponseEntity.ok("Preço do livro atualizado com sucesso")
+                    : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro não encontrado");
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro não encontrado");
         } catch (Exception e) {
@@ -79,15 +72,9 @@ public class BookController {
     @PostMapping("/books")
     public ResponseEntity<?> insertBook(@RequestBody InsertBookDTO dto){
         try{
-            if (dto.authorName() == null || dto.authorName().isBlank() ||
-                    dto.title() == null || dto.title().isBlank() ||
-                    dto.price() == null || dto.publishDate() == null ||
-                    dto.quantity() == null
-            ) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Campos estão incorretos");
-            }
-            service.insertBook(dto.authorName(), dto.price(), dto.publishDate(), dto.quantity(), dto.title());
-            return ResponseEntity.status(HttpStatus.CREATED).body("Livro criado com sucesso");
+            var result = service.insertBook(dto.authorName(), dto.price(), dto.publishDate(), dto.quantity(), dto.title());
+            return result ? ResponseEntity.status(HttpStatus.CREATED).body("Livro criado com sucesso")
+                    : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Campos estão incorretos");
         } catch (DataIntegrityViolationException e) {
             System.out.println("Erro localizado no BookController --> " + e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Livro já existe no banco de dados");
