@@ -2,7 +2,7 @@ package com.example.bookstoreapi.controllers;
 
 import com.example.bookstoreapi.entites.CustomerEntity;
 import com.example.bookstoreapi.entites.dtos.customerdtos.InsertCustomerDTO;
-import com.example.bookstoreapi.repositories.CustomerRepository;
+import com.example.bookstoreapi.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,24 +15,28 @@ import java.util.List;
 public class CustomerController {
 
     @Autowired
-    private CustomerRepository repository;
+    private CustomerService service;
 
     @GetMapping("/customers")
     public List<CustomerEntity> getAllCustomers(){
-        return repository.findAll();
+        return service.getAllCustomers();
     }
 
     @GetMapping("/customers/{id}")
     public ResponseEntity<?> getCustomerById(@PathVariable("id") Long id){
-        return repository.findById(id)
-                .map(customer -> ResponseEntity.ok().body((Object) customer))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("O cliente não existe"));
+        var optional = service.getCustomerById(id);
+        return optional.isPresent() ? ResponseEntity.ok(optional.get())
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não existe");
     }
 
-    @GetMapping("/customers/{email}")
+    @GetMapping("/customers/email/{email}")
     public ResponseEntity<?> getCustomerByEmail(@PathVariable("email") String email){
         try {
-            return ResponseEntity.ok(repository.getCustomerByEmail(email));
+            var entity = service.getCustomerByEmail(email);
+
+            if (entity != null)
+                return ResponseEntity.ok(entity);
+            else return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não existe cliente com esse email");
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Não existe cliente com esse email");
@@ -42,19 +46,9 @@ public class CustomerController {
     @PostMapping("/customers")
     public ResponseEntity<?> insertCustomer(@RequestBody InsertCustomerDTO dto){
         try{
-            if (dto.cpf().isEmpty() || dto.cpf().isBlank() ||
-                    dto.email().isEmpty() || dto.email().isBlank() ||
-                    dto.name().isEmpty() || dto.name().isBlank()
-            ) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Campos estão incorretos");
-            }
-
-            CustomerEntity entity = new CustomerEntity();
-            entity.setCpf(dto.cpf());
-            entity.setEmail(dto.email());
-            entity.setName(dto.name());
-            repository.save(entity);
-            return ResponseEntity.ok("Sucesso ao inserir cliente no banco de dados");
+            var result = service.insertCustomer(dto.cpf(), dto.email(), dto.name());
+            return result ? ResponseEntity.ok("Sucesso ao inserir cliente no banco de dados")
+                    : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Campos inválidos");
         } catch (Exception e) {
             System.out.println("Erro localizado no CustomerController --> " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Houve um erro");
