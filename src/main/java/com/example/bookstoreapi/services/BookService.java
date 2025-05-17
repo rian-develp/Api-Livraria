@@ -40,4 +40,22 @@ public class BookService {
         repository.save(entity);
         return true;
     }
+
+    public boolean updateBookPrice(Double price, Long code){
+        if ((code == null || code <= 0) || (price == null || price <= 0)){
+            return false;
+        }
+
+        repository.updateBookPrice(price, code);
+        return true;
+    }
+
+    public boolean updateBookQuantity(Integer quantity, Long code){
+        if ((code == null || code <= 0) || (quantity == null || quantity <= 0)){
+            return false;
+        }
+
+        repository.updateBookQuantity(quantity, code);
+        return true;
+    }
 }
