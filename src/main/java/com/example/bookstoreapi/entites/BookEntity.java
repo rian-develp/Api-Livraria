@@ -32,4 +32,6 @@ public class BookEntity {
     @Column(length = 42, nullable = false)
     @NonNull
     private String title;
+
+    public BookEntity(){}
 }
