@@ -21,4 +21,6 @@ public class SalesEntity {
     @Column(name = "id_customer")
     @NonNull
     private Long customerId;
+
+    public SalesEntity(){}
 }
