@@ -22,4 +22,5 @@ public class AuthorEntity {
     @NonNull
     private String name;
 
+    public AuthorEntity(){}
 }
