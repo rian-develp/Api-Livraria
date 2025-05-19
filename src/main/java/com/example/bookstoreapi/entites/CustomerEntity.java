@@ -24,4 +24,6 @@ public class CustomerEntity {
     @Column(length = 26, nullable = false)
     @NonNull
     private String name;
+
+    public CustomerEntity(){}
 }
