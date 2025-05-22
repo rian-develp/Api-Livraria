@@ -2,6 +2,7 @@ package com.example.bookstoreapi.controllers;
 
 import com.example.bookstoreapi.entites.CustomerEntity;
 import com.example.bookstoreapi.entites.dtos.customerdtos.InsertCustomerDTO;
+import com.example.bookstoreapi.exceptions.NotAllowedValueException;
 import com.example.bookstoreapi.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,9 +25,13 @@ public class CustomerController {
 
     @GetMapping("/customers/{id}")
     public ResponseEntity<?> getCustomerById(@PathVariable("id") Long id){
-        var optional = service.getCustomerById(id);
-        return optional.isPresent() ? ResponseEntity.ok(optional.get())
-                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não existe");
+        try {
+            var optional = service.getCustomerById(id);
+            return optional.isPresent() ? ResponseEntity.ok(optional.get())
+                    : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não existe");
+        } catch (NotAllowedValueException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Valor não permitido");
+        }
     }
 
     @GetMapping("/customers/email/{email}")
