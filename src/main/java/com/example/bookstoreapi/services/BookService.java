@@ -24,16 +24,10 @@ public class BookService {
 
     public Optional<?> getBookByCode(Long code) throws Exception{
 
-        if (code <= 0){
+        if (code <= 0)
             throw new NotAllowedValueException("Valor não permitido");
-        }
 
-        var entity = repository.findById(code);
-
-        if (entity.isEmpty()){
-            return Optional.of(false);
-        }
-        return entity;
+        return repository.findById(code);
     }
 
     public boolean insertBook(
@@ -50,13 +44,11 @@ public class BookService {
             throw new EmptyFieldsException("Preencha todos os campos corretamente");
         }
 
-        if (price < 0 || quantity <= 0){
+        if (price < 0 || quantity <= 0)
             throw new NotAllowedValueException("Insira um valor válido");
-        }
 
-        if (publishDate.after(Date.valueOf(LocalDate.now()))){
+        if (publishDate.after(Date.valueOf(LocalDate.now())))
             throw new NotAllowedValueException("Insira uma data válida");
-        }
 
         var entityList = getAllBooks();
         for (BookEntity b : entityList){

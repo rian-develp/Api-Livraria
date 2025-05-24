@@ -21,38 +21,37 @@ public class AuthorService {
         return repository.findAll();
     }
 
-    public Optional<AuthorEntity> getAuthorByCode(Long code){
+    public Optional<AuthorEntity> getAuthorByCode(Long code) throws EmptyFieldsException {
+
+        if (code == null)
+            throw new EmptyFieldsException("É necessário inserir o código");
+
+
         return repository.findById(code);
     }
 
     public void insertAuthor(String citizen, String name) throws Exception {
-        try {
-            if (!citizen.isEmpty() && !citizen.isBlank()
-                    && !name.isEmpty() && !name.isBlank()
-            ) {
-                AuthorEntity entity = new AuthorEntity(citizen, name);
-                repository.save(entity);
-            } else {
-                throw new EmptyFieldsException("Preencha os campos em branco");
-            }
-        } catch (IllegalArgumentException e){
-            throw new NotAllowedValueException("Valor não permitido");
+
+        if (citizen != null && !citizen.isBlank()
+                && name != null && !name.isBlank()
+        ) {
+            AuthorEntity entity = new AuthorEntity(citizen, name);
+            repository.save(entity);
+        } else {
+            throw new EmptyFieldsException("Preencha os campos em branco");
         }
     }
 
     public void deleteAuthor(Long code) throws Exception {
 
-        try{
-            if (code <= 0 || code == null) { throw new NotAllowedValueException("Valor não permitido");}
-
-            var entity = getAuthorByCode(code);
-
-            if (entity.isEmpty()) {throw new EntityNotFoundException("Autor não existe");}
-
-            repository.deleteById(code);
-
-        } catch (IllegalArgumentException e){
+        if (code <= 0 || code == null)
             throw new NotAllowedValueException("Valor não permitido");
-        }
+
+        var entity = getAuthorByCode(code);
+
+        if (entity.isEmpty())
+            throw new EntityNotFoundException("Autor não existe");
+
+        repository.deleteById(code);
     }
 }
