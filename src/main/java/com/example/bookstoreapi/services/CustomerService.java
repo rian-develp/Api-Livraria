@@ -51,10 +51,7 @@ public class CustomerService {
         return true;
     }
 
-    public CustomerEntity getCustomerByEmail(String email) throws Exception{
-
-        if (!email.matches("/^([a-z]){1,}([a-z0-9._-]){1,}([@]){1}([a-z]){2,}([.]){1}([a-z]){2,}([.]?){1}([a-z]?){2,}$/"))
-            throw new NotAllowedValueException("Valor não permitido");
+    public CustomerEntity getCustomerByEmail(String email) {
 
         var entity = repository.getCustomerByEmail(email);
 
