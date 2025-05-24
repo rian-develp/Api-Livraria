@@ -2,7 +2,7 @@ package com.example.bookstoreapi.controllers;
 
 import com.example.bookstoreapi.entites.dtos.bookdtos.InsertBookDTO;
 import com.example.bookstoreapi.entites.dtos.bookdtos.UpdateBookPriceDTO;
-import com.example.bookstoreapi.entites.dtos.bookdtos.UpdateBookQuantity;
+import com.example.bookstoreapi.entites.dtos.bookdtos.UpdateBookQuantityDTO;
 import com.example.bookstoreapi.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -56,7 +56,7 @@ public class BookController {
     }
 
     @PatchMapping("/books/quantity")
-    public ResponseEntity<?> updateBookQuantity(@RequestBody UpdateBookQuantity dto){
+    public ResponseEntity<?> updateBookQuantity(@RequestBody UpdateBookQuantityDTO dto){
         try{
             var result = service.updateBookQuantity(dto.quantity(), dto.id());
             return result ? ResponseEntity.ok("Preço do livro atualizado com sucesso")

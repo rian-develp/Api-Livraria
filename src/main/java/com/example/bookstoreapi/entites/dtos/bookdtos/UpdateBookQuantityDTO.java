@@ -1,6 +1,6 @@
 package com.example.bookstoreapi.entites.dtos.bookdtos;
 
-public record UpdateBookQuantity(
+public record UpdateBookQuantityDTO(
         Long id,
         Integer quantity
 ) {
