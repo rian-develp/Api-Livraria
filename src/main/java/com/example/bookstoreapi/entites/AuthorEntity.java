@@ -15,7 +15,7 @@ public class AuthorEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long code;
-    @Column(length = 30)
+    @Column(nullable = false, length = 30)
     @NonNull
     private String citizen;
     @Column(nullable = false, length = 46)
