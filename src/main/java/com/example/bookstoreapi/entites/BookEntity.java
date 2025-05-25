@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-
-import java.sql.Date;
+import java.time.LocalDate;
 
 @RequiredArgsConstructor
 @Getter
@@ -25,7 +24,7 @@ public class BookEntity {
     private Double price;
     @Column(name = "publish_date", nullable = false)
     @NonNull
-    private Date publishDate;
+    private LocalDate publishDate;
     @Column(nullable = false)
     @NonNull
     private Integer quantity;
