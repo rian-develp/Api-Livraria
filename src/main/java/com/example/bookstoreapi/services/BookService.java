@@ -4,11 +4,12 @@ import com.example.bookstoreapi.entites.BookEntity;
 import com.example.bookstoreapi.exceptions.EmptyFieldsException;
 import com.example.bookstoreapi.exceptions.NotAllowedValueException;
 import com.example.bookstoreapi.repositories.BookRepository;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.sql.Date;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,52 +31,49 @@ public class BookService {
         return repository.findById(code);
     }
 
-    public boolean insertBook(
+    public void insertBook(
         String authorName, Double price,
-        Date publishDate, Integer quantity,
+        String publishDate, Integer quantity,
         String title
     ) throws Exception {
 
-        if( authorName == null || authorName.isBlank() ||
-            title == null || title.isBlank() ||
-            price == null || publishDate == null ||
-            quantity == null
-        ){
-            throw new EmptyFieldsException("Preencha todos os campos corretamente");
-        }
+//        if( authorName == null || authorName.isBlank() ||
+//            title == null || title.isBlank() ||
+//            price == null || publishDate == null ||
+//            quantity == null
+//        ){
+//            throw new EmptyFieldsException("Preencha todos os campos corretamente");
+//        }
 
         if (price < 0 || quantity <= 0)
             throw new NotAllowedValueException("Insira um valor válido");
 
-        if (publishDate.after(Date.valueOf(LocalDate.now())))
-            throw new NotAllowedValueException("Insira uma data válida");
+//        if (publishDate == null || publishDate.isBlank())
+//            throw new NotAllowedValueException("Insira uma data válida");
 
         var entityList = getAllBooks();
         for (BookEntity b : entityList){
             if (b.getTitle().equalsIgnoreCase(title) && b.getAuthorName().equalsIgnoreCase(authorName)){
-                return false;
+                throw new EntityExistsException("Livro já existe");
             }
         }
 
-        BookEntity entity = new BookEntity(authorName, price, publishDate, quantity, title);
+        var dateConverted = validDate(publishDate);
+        BookEntity entity = new BookEntity(authorName, price, dateConverted, quantity, title);
         repository.save(entity);
-        return true;
     }
 
-    public boolean updateBookPrice(Double price, Long code) throws Exception{
+    public void updateBookPrice(Double price, Long code) throws Exception{
 
-        if ((code == null || code <= 0) || (price == null || price <= 0)){
+        if ((code == null || code <= 0) || (price == null || price <= 0))
             throw new NotAllowedValueException("Valores não permitidos");
-        }
 
         var entity = getBookByCode(code);
 
-        if (entity.isEmpty()) {
-            return false;
-        }
+        if (entity.isEmpty())
+            throw new EntityNotFoundException("Livro não existe");
 
         repository.updateBookPrice(price, code);
-        return true;
     }
 
     public boolean updateBookQuantity(Integer quantity, Long code) throws Exception {
@@ -91,5 +89,10 @@ public class BookService {
         }
 
         return false;
+    }
+
+    public LocalDate validDate(String date){
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        return LocalDate.parse(date, dateTimeFormatter);
     }
 }
