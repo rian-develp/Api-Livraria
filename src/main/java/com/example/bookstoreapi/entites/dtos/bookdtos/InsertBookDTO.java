@@ -3,7 +3,6 @@ package com.example.bookstoreapi.entites.dtos.bookdtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate;
 
 public record InsertBookDTO(
     @NotNull(message = "Nome do autor não pode ser null")
@@ -14,7 +13,7 @@ public record InsertBookDTO(
     Double price,
     @NotNull(message = "Data não pode ser null")
     @NotBlank(message = "Data deve ser preenchida")
-    LocalDate publishDate,
+    String publishDate,
     @NotNull(message = "Preço não pode ser null")
     @NotBlank(message = "Preço deve ser preenchido")
     Integer quantity,
