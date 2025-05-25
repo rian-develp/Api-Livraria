@@ -1,8 +1,6 @@
 package com.example.bookstoreapi.controllers;
 
-import com.example.bookstoreapi.entites.AuthorEntity;
 import com.example.bookstoreapi.entites.dtos.authordtos.InsertAuthorDTO;
-import com.example.bookstoreapi.repositories.AuthorRepository;
 import com.example.bookstoreapi.services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

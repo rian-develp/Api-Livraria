@@ -2,7 +2,7 @@ package com.example.bookstoreapi.controllers;
 
 import com.example.bookstoreapi.entites.dtos.bookdtos.InsertBookDTO;
 import com.example.bookstoreapi.entites.dtos.bookdtos.UpdateBookPriceDTO;
-import com.example.bookstoreapi.entites.dtos.bookdtos.UpdateBookQuantity;
+import com.example.bookstoreapi.entites.dtos.bookdtos.UpdateBookQuantityDTO;
 import com.example.bookstoreapi.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -56,7 +56,7 @@ public class BookController {
     }
 
     @PatchMapping("/books/quantity")
-    public ResponseEntity<?> updateBookQuantity(@RequestBody UpdateBookQuantity dto){
+    public ResponseEntity<?> updateBookQuantity(@RequestBody UpdateBookQuantityDTO dto){
         try{
             var result = service.updateBookQuantity(dto.quantity(), dto.id());
             return result ? ResponseEntity.ok("Preço do livro atualizado com sucesso")
@@ -72,15 +72,16 @@ public class BookController {
     @PostMapping("/books")
     public ResponseEntity<?> insertBook(@RequestBody InsertBookDTO dto){
         try{
-            var result = service.insertBook(dto.authorName(), dto.price(), dto.publishDate(), dto.quantity(), dto.title());
-            return result ? ResponseEntity.status(HttpStatus.CREATED).body("Livro criado com sucesso")
-                    : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Campos estão incorretos");
+            service.insertBook(dto.authorName(), dto.price(), dto.publishDate(), dto.quantity(), dto.title());
+            return ResponseEntity.ok().body("Autor inserido com sucesso");
         } catch (DataIntegrityViolationException e) {
             System.out.println("Erro localizado no BookController --> " + e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Livro já existe no banco de dados");
         } catch (NullPointerException e){
             System.out.println("Erro Localizado no BookController --> " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao inserir livro");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.example.bookstoreapi.controllers;
 
-import com.example.bookstoreapi.entites.SalesEntity;
 import com.example.bookstoreapi.entites.dtos.salesdtos.InsertSaleDTO;
 import com.example.bookstoreapi.services.SalesService;
 import org.springframework.beans.factory.annotation.Autowired;
