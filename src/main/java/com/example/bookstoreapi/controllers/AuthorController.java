@@ -2,6 +2,7 @@ package com.example.bookstoreapi.controllers;
 
 import com.example.bookstoreapi.entites.dtos.authordtos.InsertAuthorDTO;
 import com.example.bookstoreapi.services.AuthorService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,21 +42,13 @@ public class AuthorController {
     }
 
     @PostMapping("/authors")
-    public ResponseEntity<String> insertAuthor(@RequestBody InsertAuthorDTO dto) {
-
-        if (!dto.citizen().isEmpty() && !dto.citizen().isBlank()
-                && !dto.name().isEmpty() && !dto.name().isBlank()
-        ) {
-
-            try {
-                service.insertAuthor(dto.citizen(), dto.name());
-                return ResponseEntity.status(HttpStatus.CREATED).body("Autor inserido com sucesso");
-            } catch (Exception e) {
-                System.out.println("Erro localizado no AuthorController --> " + e.getMessage());
-                return ResponseEntity.ok("Erro ao inserir usuário no banco de dados");
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro nos campos");
+    public ResponseEntity<String> insertAuthor(@RequestBody @Valid InsertAuthorDTO dto) {
+        try {
+            service.insertAuthor(dto.citizen(), dto.name());
+            return ResponseEntity.status(HttpStatus.CREATED).body("Autor inserido com sucesso");
+        } catch (Exception e) {
+            System.out.println("Erro localizado no AuthorController --> " + e.getMessage());
+            return ResponseEntity.ok("Erro ao inserir usuário no banco de dados");
         }
     }
 }
