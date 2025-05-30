@@ -3,7 +3,9 @@ package com.example.bookstoreapi.controllers;
 import com.example.bookstoreapi.entites.dtos.bookdtos.InsertBookDTO;
 import com.example.bookstoreapi.entites.dtos.bookdtos.UpdateBookPriceDTO;
 import com.example.bookstoreapi.entites.dtos.bookdtos.UpdateBookQuantityDTO;
+import com.example.bookstoreapi.exceptions.NotAllowedValueException;
 import com.example.bookstoreapi.services.BookService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -35,8 +37,10 @@ public class BookController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro não encontrado");
             }
             return ResponseEntity.ok(bookEntity);
+        } catch (NotAllowedValueException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            System.out.println("Erro Localizado no BookController --> " + e.getMessage());
+            System.out.println("Erro localizado no BookController -> " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Houve um erro");
         }
     }
@@ -44,12 +48,13 @@ public class BookController {
     @PatchMapping("/books/price")
     public ResponseEntity<?> updateBookPrice(@RequestBody UpdateBookPriceDTO dto){
         try{
-            var result = service.updateBookPrice(dto.price(), dto.id());
-            return result ? ResponseEntity.ok("Preço do livro atualizado com sucesso")
-                    : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro não encontrado");
+            service.updateBookPrice(dto.price(), dto.id());
+            return ResponseEntity.ok("Preço do livro atualizado com sucesso");
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro não encontrado");
-        } catch (Exception e) {
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar preço do livro");
+        } catch (Exception e){
             System.out.println("Erro Localizado no BookController --> " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar preço do livro");
         }
@@ -58,10 +63,11 @@ public class BookController {
     @PatchMapping("/books/quantity")
     public ResponseEntity<?> updateBookQuantity(@RequestBody UpdateBookQuantityDTO dto){
         try{
-            var result = service.updateBookQuantity(dto.quantity(), dto.id());
-            return result ? ResponseEntity.ok("Preço do livro atualizado com sucesso")
-                    : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro não encontrado");
-        } catch (NullPointerException e) {
+            service.updateBookQuantity(dto.quantity(), dto.id());
+            return ResponseEntity.ok("Preço do livro atualizado com sucesso");
+        } catch (NotAllowedValueException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Preencha os campos com os valores corretos");
+        } catch (EntityNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro não encontrado");
         } catch (Exception e) {
             System.out.println("Erro Localizado no BookController --> " + e.getMessage());
