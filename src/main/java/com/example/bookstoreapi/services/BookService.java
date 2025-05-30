@@ -80,6 +80,8 @@ public class BookService {
         var entity = getBookByCode(code);
         if (entity.isEmpty())
             throw new EntityNotFoundException("Livro não existe");
+
+        repository.updateBookQuantity(quantity, code);
     }
 
     private LocalDate validDate(String date){
