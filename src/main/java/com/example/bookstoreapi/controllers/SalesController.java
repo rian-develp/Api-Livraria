@@ -1,6 +1,7 @@
 package com.example.bookstoreapi.controllers;
 
 import com.example.bookstoreapi.entites.dtos.salesdtos.InsertSaleDTO;
+import com.example.bookstoreapi.exceptions.NotAllowedValueException;
 import com.example.bookstoreapi.services.SalesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,9 +41,10 @@ public class SalesController {
     @PostMapping("/sales")
     public ResponseEntity<String> insertSale(@RequestBody InsertSaleDTO dto){
         try{
-            var result = service.insertSale(dto.bookCode(), dto.customerId());
-            return result ? ResponseEntity.ok("Venda inserida com sucesso")
-                    : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Os campos estão incorretos");
+          service.insertSale(dto.bookCode(), dto.customerId());
+          return ResponseEntity.ok("Venda inserida com sucesso");
+        } catch (NullPointerException | NotAllowedValueException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e){
             System.out.println("Erro localizado no SalesController --> " +e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Houve um Erro");
