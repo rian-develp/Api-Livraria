@@ -64,7 +64,7 @@ public class BookController {
     public ResponseEntity<?> updateBookQuantity(@RequestBody UpdateBookQuantityDTO dto){
         try{
             service.updateBookQuantity(dto.quantity(), dto.id());
-            return ResponseEntity.ok("Preço do livro atualizado com sucesso");
+            return ResponseEntity.ok("Quantidade do livro atualizado com sucesso");
         } catch (NotAllowedValueException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Preencha os campos com os valores corretos");
         } catch (EntityNotFoundException e){
