@@ -26,31 +26,27 @@ public class AuthorService {
         if (code == null)
             throw new EmptyFieldsException("É necessário inserir o código");
 
-
         return repository.findById(code);
     }
 
-    public void insertAuthor(String citizen, String name) throws Exception {
+    public void insertAuthor(String citizen, String name) throws EmptyFieldsException {
 
-        if (citizen != null && !citizen.isBlank()
-                && name != null && !name.isBlank()
-        ) {
-            AuthorEntity entity = new AuthorEntity(citizen, name);
-            repository.save(entity);
-        } else {
-            throw new EmptyFieldsException("Preencha os campos em branco");
-        }
+        if (citizen.isBlank() || name.isBlank())
+            throw new EmptyFieldsException("Preencha todos os campos");
+
+        AuthorEntity entity = new AuthorEntity(citizen, name);
+        repository.save(entity);
     }
 
     public void deleteAuthor(Long code) throws Exception {
 
-        if (code <= 0 || code == null)
+        if (code <= 0)
             throw new NotAllowedValueException("Valor não permitido");
 
         var entity = getAuthorByCode(code);
 
         if (entity.isEmpty())
-            throw new EntityNotFoundException("Autor não existe");
+            throw new EntityNotFoundException("Deleção inválida");
 
         repository.deleteById(code);
     }

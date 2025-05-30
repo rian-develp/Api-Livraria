@@ -37,19 +37,15 @@ public class BookService {
         String title
     ) throws Exception {
 
-//        if( authorName == null || authorName.isBlank() ||
-//            title == null || title.isBlank() ||
-//            price == null || publishDate == null ||
-//            quantity == null
-//        ){
-//            throw new EmptyFieldsException("Preencha todos os campos corretamente");
-//        }
+        if(authorName.isBlank() || title.isBlank() ||
+            publishDate.isBlank() || price == null ||
+                quantity == null
+        ){
+            throw new EmptyFieldsException("Preencha todos os campos corretamente");
+        }
 
         if (price < 0 || quantity <= 0)
             throw new NotAllowedValueException("Insira um valor válido");
-
-//        if (publishDate == null || publishDate.isBlank())
-//            throw new NotAllowedValueException("Insira uma data válida");
 
         var entityList = getAllBooks();
         for (BookEntity b : entityList){
@@ -76,22 +72,17 @@ public class BookService {
         repository.updateBookPrice(price, code);
     }
 
-    public boolean updateBookQuantity(Integer quantity, Long code) throws Exception {
+    public void updateBookQuantity(Integer quantity, Long code) throws Exception {
         if ((code == null || code <= 0) || (quantity == null || quantity <= 0)){
             throw new NotAllowedValueException("Valores não permitidos");
         }
 
         var entity = getBookByCode(code);
-
-        if (entity.isPresent()) {
-            repository.updateBookQuantity(quantity, code);
-            return true;
-        }
-
-        return false;
+        if (entity.isEmpty())
+            throw new EntityNotFoundException("Livro não existe");
     }
 
-    public LocalDate validDate(String date){
+    private LocalDate validDate(String date){
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         return LocalDate.parse(date, dateTimeFormatter);
     }

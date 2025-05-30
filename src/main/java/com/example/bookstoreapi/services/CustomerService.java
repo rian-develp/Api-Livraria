@@ -34,13 +34,12 @@ public class CustomerService {
             return entity;
     }
 
-    public boolean insertCustomer(String cpf, String email, String name) throws Exception{
+    public void insertCustomer(String cpf, String email, String name) throws Exception{
         if (cpf.isBlank() || email.isBlank() || name.isBlank()) {
             throw new EmptyFieldsException("Todos os campos devem ser preenchidos");
         }
 
         if (!name.matches("/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/")
-            || !cpf.matches("/^[0-9]+$/")
             || !email.matches("/^([a-z]){1,}([a-z0-9._-]){1,}([@]){1}([a-z]){2,}([.]){1}([a-z]){2,}([.]?){1}([a-z]?){2,}$/")
         ){
             throw new NotAllowedValueException("Valores não permitidos");
@@ -48,10 +47,9 @@ public class CustomerService {
 
         CustomerEntity entity = new CustomerEntity(cpf, email, name);
         repository.save(entity);
-        return true;
     }
 
-    public CustomerEntity getCustomerByEmail(String email) {
+    public CustomerEntity getCustomerByEmail(String email) throws EntityNotFoundException{
 
         var entity = repository.getCustomerByEmail(email);
 
