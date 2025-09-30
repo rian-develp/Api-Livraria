@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CustomerService {
@@ -21,20 +20,16 @@ public class CustomerService {
         return repository.findAll();
     }
 
-    public Optional<CustomerEntity> getCustomerById(Long id) throws NotAllowedValueException{
+    public CustomerEntity getCustomerById(Long id) throws NotAllowedValueException{
 
         if (id == null || id <= 0)
             throw new NotAllowedValueException("Valor não permitido");
 
-        var entity = repository.findById(id);
-
-        if (entity.isEmpty())
-            throw new EntityNotFoundException("Não existe cliente com esse identificador");
-        else
-            return entity;
+        return repository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Cliente não encontrado "));
     }
 
-    public void insertCustomer(String cpf, String email, String name) throws Exception{
+    public void insertCustomer(String cpf, String email, String name) throws Exception {
         if (cpf.isBlank() || email.isBlank() || name.isBlank()) {
             throw new EmptyFieldsException("Todos os campos devem ser preenchidos");
         }
@@ -49,13 +44,9 @@ public class CustomerService {
         repository.save(entity);
     }
 
-    public CustomerEntity getCustomerByEmail(String email) throws EntityNotFoundException{
+    public CustomerEntity getCustomerByEmail(String email){
 
-        var entity = repository.getCustomerByEmail(email);
-
-        if (entity != null)
-            return entity;
-        else
-            throw new EntityNotFoundException("Não existe cliente com esse Email");
+       return repository.getCustomerByEmail(email).orElseThrow(() ->
+               new EntityNotFoundException("Cliente não encontrado"));
     }
 }

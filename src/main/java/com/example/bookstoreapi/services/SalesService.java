@@ -2,6 +2,8 @@ package com.example.bookstoreapi.services;
 
 import com.example.bookstoreapi.entites.SalesEntity;
 import com.example.bookstoreapi.exceptions.NotAllowedValueException;
+import com.example.bookstoreapi.repositories.BookRepository;
+import com.example.bookstoreapi.repositories.CustomerRepository;
 import com.example.bookstoreapi.repositories.SalesRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +16,16 @@ import java.util.Optional;
 public class SalesService {
 
     @Autowired
-    private SalesRepository repository;
+    private SalesRepository salesRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
 
     public List<SalesEntity> getAllSales(){
-        return repository.findAll();
+        return salesRepository.findAll();
     }
 
     public Optional<SalesEntity> getSaleById(Long id) throws Exception{
@@ -27,7 +35,7 @@ public class SalesService {
         else if (id == null)
             throw new NullPointerException("Id não pode ser null");
 
-        return repository.findById(id);
+        return salesRepository.findById(id);
     }
 
     public void insertSale(Long bookCode, Long customerId) throws Exception{
@@ -38,7 +46,12 @@ public class SalesService {
         if (bookCode < 0 || customerId < 0)
             throw new NotAllowedValueException("Valores devem ser preenchidos");
 
-        SalesEntity entity = new SalesEntity(bookCode, customerId);
-        repository.save(entity);
+        var bookEntity = bookRepository.findById(bookCode);
+        var customerEntity = customerRepository.findById(customerId);
+
+        if (bookEntity.isPresent() && customerEntity.isPresent()){
+            SalesEntity entity = new SalesEntity(bookEntity.get(), customerEntity.get());
+            salesRepository.save(entity);
+        }
     }
 }
