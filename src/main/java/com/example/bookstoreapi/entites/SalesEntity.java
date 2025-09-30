@@ -1,26 +1,28 @@
 package com.example.bookstoreapi.entites;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@RequiredArgsConstructor
-@Getter
-@Setter
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "sales")
+@Getter
+@Setter
+@RequiredArgsConstructor
+@NoArgsConstructor
 public class SalesEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "book_code")
+    @Column(name = "sale_hour")
+    private LocalDateTime saleHour;
+    @ManyToOne
+    @JoinColumn(name = "book_code")
     @NonNull
-    private Long bookCode;
-    @Column(name = "id_customer")
+    private BookEntity book;
+    @ManyToOne
+    @JoinColumn(name = "id_customer")
     @NonNull
-    private Long customerId;
-
-    public SalesEntity(){}
+    private CustomerEntity customer;
 }
