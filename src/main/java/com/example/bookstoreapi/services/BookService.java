@@ -1,6 +1,8 @@
 package com.example.bookstoreapi.services;
 
 import com.example.bookstoreapi.entites.BookEntity;
+import com.example.bookstoreapi.entites.dtos.bookdtos.InsertBookDTO;
+import com.example.bookstoreapi.entites.dtos.bookdtos.UpdateBookPriceDTO;
 import com.example.bookstoreapi.exceptions.EmptyFieldsException;
 import com.example.bookstoreapi.exceptions.NotAllowedValueException;
 import com.example.bookstoreapi.repositories.BookRepository;
@@ -8,10 +10,10 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BookService {
@@ -23,53 +25,49 @@ public class BookService {
         return repository.findAll();
     }
 
-    public Optional<?> getBookByCode(Long code) throws Exception{
+    public BookEntity getBookByCode(Long code) throws Exception{
 
         if (code <= 0)
             throw new NotAllowedValueException("Valor não permitido");
 
-        return repository.findById(code);
+        return repository.findById(code).orElseThrow(() -> new EntityNotFoundException(""));
     }
 
-    public void insertBook(
-        String authorName, Double price,
-        String publishDate, Integer quantity,
-        String title
-    ) throws Exception {
+    public void insertBook(InsertBookDTO dto) throws Exception {
 
-        if(authorName.isBlank() || title.isBlank() ||
-            publishDate.isBlank() || price == null ||
-                quantity == null
+        if(dto.authorName().isBlank() || dto.title().isBlank() ||
+            dto.publishDate().isBlank() || dto.price() == null ||
+                dto.quantity() == null
         ){
             throw new EmptyFieldsException("Preencha todos os campos corretamente");
         }
 
-        if (price < 0 || quantity <= 0)
+        if (dto.price() < 0 || dto.quantity() <= 0)
             throw new NotAllowedValueException("Insira um valor válido");
 
         var entityList = getAllBooks();
         for (BookEntity b : entityList){
-            if (b.getTitle().equalsIgnoreCase(title) && b.getAuthorName().equalsIgnoreCase(authorName)){
+            if (b.getTitle().equalsIgnoreCase(dto.title()) && b.getAuthorName().equalsIgnoreCase(dto.authorName())){
                 throw new EntityExistsException("Livro já existe");
             }
         }
 
-        var dateConverted = validDate(publishDate);
-        BookEntity entity = new BookEntity(authorName, price, dateConverted, quantity, title);
+        var dateConverted = validDate(dto.publishDate());
+        BookEntity entity = new BookEntity(dto.authorName(), dto.price(), dateConverted, dto.quantity(), dto.title());
         repository.save(entity);
     }
 
-    public void updateBookPrice(Double price, Long code) throws Exception{
+    public void updateBookPrice(UpdateBookPriceDTO dto) throws Exception{
 
-        if ((code == null || code <= 0) || (price == null || price <= 0))
+        if ((dto.code() == null || dto.code() <= 0) || (dto.price() == null || dto.price() <= 0))
             throw new NotAllowedValueException("Valores não permitidos");
 
-        var entity = getBookByCode(code);
+        var entity = getBookByCode(dto.code());
 
-        if (entity.isEmpty())
+        if (entity == null)
             throw new EntityNotFoundException("Livro não existe");
 
-        repository.updateBookPrice(price, code);
+        repository.updateBookPrice(dto.price(), dto.code());
     }
 
     public void updateBookQuantity(Integer quantity, Long code) throws Exception {
@@ -78,7 +76,7 @@ public class BookService {
         }
 
         var entity = getBookByCode(code);
-        if (entity.isEmpty())
+        if (entity == null)
             throw new EntityNotFoundException("Livro não existe");
 
         repository.updateBookQuantity(quantity, code);
