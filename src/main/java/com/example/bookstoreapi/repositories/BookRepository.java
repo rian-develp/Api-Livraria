@@ -8,16 +8,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-@Repository
 public interface BookRepository extends JpaRepository<BookEntity, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE books SET price = :newPrice WHERE code = :code", nativeQuery = true)
+    @Query(value = "UPDATE BookEntity b SET b.price = :newPrice WHERE b.code = :code")
     void updateBookPrice(@Param("newPrice") Double newPrice, @Param("code") Long code);
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE books SET quantity = :newQuantity WHERE code = :code", nativeQuery = true)
+    @Query(value = "UPDATE BookEntity b SET b.quantity = :newQuantity WHERE b.code = :code")
     void updateBookQuantity(@Param("newQuantity") Integer newQuantity, @Param("code") Long code);
 }

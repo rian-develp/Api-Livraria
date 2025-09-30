@@ -1,16 +1,14 @@
 package com.example.bookstoreapi.entites;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@RequiredArgsConstructor
-@Getter
-@Setter
 @Entity
 @Table(name = "customers")
+@Getter
+@Setter
+@RequiredArgsConstructor
+@NoArgsConstructor
 public class CustomerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +22,4 @@ public class CustomerEntity {
     @Column(length = 26, nullable = false)
     @NonNull
     private String name;
-
-    public CustomerEntity(){}
 }

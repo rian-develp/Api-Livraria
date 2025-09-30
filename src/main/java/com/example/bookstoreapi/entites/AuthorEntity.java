@@ -1,16 +1,14 @@
 package com.example.bookstoreapi.entites;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@RequiredArgsConstructor
-@Getter
-@Setter
 @Entity
 @Table(name = "authors")
+@Getter
+@Setter
+@RequiredArgsConstructor
+@NoArgsConstructor
 public class AuthorEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +19,4 @@ public class AuthorEntity {
     @Column(nullable = false, length = 46)
     @NonNull
     private String name;
-
-    public AuthorEntity(){}
 }
