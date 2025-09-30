@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AuthorService {
@@ -21,12 +20,10 @@ public class AuthorService {
         return repository.findAll();
     }
 
-    public Optional<AuthorEntity> getAuthorByCode(Long code) throws EmptyFieldsException {
+    public AuthorEntity getAuthorByCode(Long code) {
 
-        if (code == null)
-            throw new EmptyFieldsException("É necessário inserir o código");
-
-        return repository.findById(code);
+        return repository.findById(code).orElseThrow(()
+                -> new EntityNotFoundException("Autor não encontrado"));
     }
 
     public void insertAuthor(String citizen, String name) throws EmptyFieldsException {
@@ -45,7 +42,7 @@ public class AuthorService {
 
         var entity = getAuthorByCode(code);
 
-        if (entity.isEmpty())
+        if (entity == null)
             throw new EntityNotFoundException("Deleção inválida");
 
         repository.deleteById(code);
